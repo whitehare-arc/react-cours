@@ -1,29 +1,24 @@
-import React, { useRef, useEffect } from 'react';
+import { useState } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
 
 function App() {
-  const countRef = useRef(0);
-  const warningRef = useRef(null);
+  const [count, setCount] = useState(0);
+  const [warning, setWarning] = useState('');
 
   const handleIncrement = () => {
-    warningRef.current.textContent = '';
-    countRef.current.textContent = `Compteur : ${++countRef.current.value}`;
+    setWarning('');
+    setCount(count + 1);
   };
 
   const handleDecrement = () => {
-    if (countRef.current.value > 0) {
-      countRef.current.textContent = `Compteur : ${--countRef.current.value}`;
+    if (count > 0) {
+      setCount(count - 1);
     } else {
-      warningRef.current.textContent = 'Aller en-dessous de zéro est défendu !!';
+      setWarning('Aller en-dessous de zéro est défendu !!');
     }
   };
-
-  useEffect(() => {
-    countRef.current.value = 0;
-    countRef.current.textContent = `Compteur : ${countRef.current.value}`;
-  }, []);
 
   return (
     <>
@@ -37,10 +32,10 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <h1 ref={countRef}>Compteur : 0</h1>
+        <h1>Compteur : {count}</h1>
         <button onClick={handleIncrement}>+1</button>
         <button onClick={handleDecrement}>-1</button>
-        <p ref={warningRef} style={{ color: 'red' }}></p>
+        {warning && <p style={{ color: 'red' }}>{warning}</p>}
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
         </p>
