@@ -31,8 +31,7 @@ function App() {
         </a>
       </div>
       <h1>Vite + React</h1>
-      <div className="card">
-        <h1>Compteur : {count}</h1>
+      <div className="card"></div>
         <button onClick={handleIncrement}>+1</button>
         <button onClick={handleDecrement}>-1</button>
         {warning && <p style={{ color: 'red' }}>{warning}</p>}
