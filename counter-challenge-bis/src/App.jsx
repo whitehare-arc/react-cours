@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import reactLogo from './assets/react.svg';
 import viteLogo from '/vite.svg';
 import './App.css';
@@ -8,33 +8,40 @@ function Counter({ increment, description, isCyclic = false, isBinary = false, h
   const [isRunning, setIsRunning] = useState(false);
   const [timerId, setTimerId] = useState(null);
 
-  useEffect(() => {
-    if (!isCyclic && !isBinary && count >= 20) {
-      clearInterval(timerId);
-      setIsRunning(false);
-    }
-  }, [count, timerId, isCyclic, isBinary]);
-
   const handleStart = () => {
-    setIsRunning(true);
-    setTimerId(setInterval(() => {
-      if (isCyclic) {
-        setCount(prevCount => (prevCount + increment) % 21);
-      } else if (isBinary) {
-        setCount(prevCount => (prevCount === 0 ? 1 : 0));
-      } else {
-        setCount(prevCount => prevCount + increment);
-      }
-    }, 1000));
+    if (!isRunning) {
+      setIsRunning(true);
+      const newTimerId = setInterval(() => {
+        setCount(prevCount => {
+          if (!isCyclic && !isBinary && prevCount + increment >= 20) {
+            clearInterval(newTimerId);
+            setIsRunning(false);
+            return 20;
+          }
+          if (isCyclic && prevCount + increment >= 20) {
+            return 0;
+          }
+          if (isBinary) {
+            return prevCount === 0 ? 1 : 0;
+          }
+          return prevCount + increment;
+        });
+      }, 1000);
+      setTimerId(newTimerId);
+    }
   };
 
   const handleStop = () => {
-    clearInterval(timerId);
-    setIsRunning(false);
+    if (isRunning) {
+      clearInterval(timerId);
+      setIsRunning(false);
+    }
   };
 
   const handleReset = () => {
     setCount(0);
+    clearInterval(timerId);
+    setIsRunning(false);
   };
 
   return (
@@ -64,15 +71,15 @@ function App() {
       <main>
         <h1>Vite + React</h1>
         <section style={{ display: 'flex', justifyContent: 'center', gap: '50px', margin: '20px 0' }}>
-          <Counter increment={1} description="Compteur +1" />
-          <Counter increment={2} description="Compteur +2" />
+          <Counter increment={1} description="Compteur+1" />
+          <Counter increment={2} description="Compteur+2" />
         </section>
         <section style={{ display: 'flex', justifyContent: 'center', gap: '50px', margin: '20px 0' }}>
           <Counter increment={1} description="Compteur cyclique" isCyclic={true} hasReset={false} />
           <Counter increment={1} description="Compteur binaire" isBinary={true} hasReset={false} />
         </section>
       </main>
-      
+     
     </div>
   );
 }
