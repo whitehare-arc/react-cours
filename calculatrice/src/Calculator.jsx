@@ -1,79 +1,77 @@
-import React, { useReducer, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Calculator.css';
- 
-const initialState = {
-  num1: '',
-  num2: '',
-  result: null,
-  error: '',
-  operationCount: 0
-};
-
-const calculatorReducer = (state, action) => {
-  switch (action.type) {
-    case 'SET_NUM1':
-      return { ...state, num1: action.payload };
-    case 'SET_NUM2':
-      return { ...state, num2: action.payload };
-    case 'ADD':
-      if (isNaN(parseFloat(state.num1)) || isNaN(parseFloat(state.num2))) {
-        return { ...state, error: 'Les nombres sont invalides !', result: null };
-      }
-      return {
-        ...state,
-        result: parseFloat(state.num1) + parseFloat(state.num2),
-        operationCount: state.operationCount + 1,
-        error: ''
-      };
-    case 'MULTIPLY':
-      if (isNaN(parseFloat(state.num1)) || isNaN(parseFloat(state.num2))) {
-        return { ...state, error: 'Les nombres sont invalides !', result: null };
-      }
-      return {
-        ...state,
-        result: parseFloat(state.num1) * parseFloat(state.num2),
-        operationCount: state.operationCount + 1,
-        error: ''
-      };
-    case 'RESET':
-      return { ...state, num1: '', num2: '', result: null, error: '' };
-    default:
-      return state;
-  }
-};
 
 const Calculator = () => {
-  const [state, dispatch] = useReducer(calculatorReducer, initialState);
+  const [num1, setNum1] = useState('');
+  const [num2, setNum2] = useState('');
+  const [result, setResult] = useState(null);
+  const [error, setError] = useState('');
+  const [operationCount, setOperationCount] = useState(0);
 
   useEffect(() => {
-    if (state.operationCount > 0 && state.operationCount % 10 === 0) {
-      alert(`Déjà ${state.operationCount} opérations !`);
+    if (operationCount > 0 && operationCount % 10 === 0) {
+      alert(`Déjà ${operationCount} opérations !`);
     }
-  }, [state.operationCount]);
+  }, [operationCount]);
+
+  const handleAddition = () => {
+    const number1 = parseFloat(num1);
+    const number2 = parseFloat(num2);
+
+    if (isNaN(number1) || isNaN(number2)) {
+      setError('Les nombres sont invalides !');
+      return;
+    }
+
+    setResult(number1 + number2);
+    setOperationCount(prevCount => prevCount + 1);
+    setError('');
+  };
+
+  const handleMultiplication = () => {
+    const number1 = parseFloat(num1);
+    const number2 = parseFloat(num2);
+
+    if (isNaN(number1) || isNaN(number2)) {
+      setError('Les nombres sont invalides !');
+      return;
+    }
+
+    setResult(number1 * number2);
+    setOperationCount(prevCount => prevCount + 1);
+    setError('');
+  };
+
+  const handleReset = () => {
+    setNum1('');
+    setNum2('');
+    setResult(null);
+    setError('');
+  };
 
   return (
     <div className="calculator">
       <div className="inputs">
         <input
           type="text"
-          value={state.num1}
-          onChange={(e) => dispatch({ type: 'SET_NUM1', payload: e.target.value })}
+          value={num1}
+          onChange={(e) => setNum1(e.target.value)}
           placeholder="Num1"
         />
         <input
           type="text"
-          value={state.num2}
-          onChange={(e) => dispatch({ type: 'SET_NUM2', payload: e.target.value })}
+          value={num2}
+          onChange={(e) => setNum2(e.target.value)}
           placeholder="Num2"
         />
       </div>
       <div className="buttons">
-        <button onClick={() => dispatch({ type: 'ADD' })}>+</button>
-        <button onClick={() => dispatch({ type: 'MULTIPLY' })}>*</button>
-        <button onClick={() => dispatch({ type: 'RESET' })}>Reset</button>
+        <button onClick={handleAddition}>+</button>
+        <button onClick={handleMultiplication}>*</button>
+        <button onClick={handleReset}>Reset</button>
       </div>
-      {state.result !== null && <p>Résultat : {state.result}</p>}
-      {state.error && <p className="error">{state.error}</p>}
+      {result !== null && <p>Résultat : {result}</p>}
+      {error && <p className="error">{error}</p>}
     </div>
   );
 };
